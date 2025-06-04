@@ -5,35 +5,51 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
+
+	pokecache "github.com/shivtriv12/pokedex-go/internal"
 )
 
-type cliCommand struct {
-	name        string
-	description string
-	callback    func() error
-}
-
 func startRepl() {
-	scanner := bufio.NewScanner(os.Stdin)
+	baseConfig := config{
+		Next:     "https://pokeapi.co/api/v2/location-area",
+		Previous: "",
+	}
+
 	commands := map[string]cliCommand{
 		"exit": {
 			name:        "exit",
 			description: "Exit the Pokedex",
-			callback:    commandExit,
+			Callback:    commandExit,
 		},
 	}
 	commands["help"] = cliCommand{
 		name:        "help",
 		description: "Lists all the Command's Usage",
-		callback:    commandHelp,
+		Callback:    commandHelp,
 	}
+	commands["map"] = cliCommand{
+		name:        "map",
+		description: "Displays the name of next 20 location areas in pokemon world",
+		Callback:    commandMap,
+	}
+	commands["mapb"] = cliCommand{
+		name:        "mapb",
+		description: "Displays the name of prev 20 location areas in pokemon world",
+		Callback:    commandMapb,
+	}
+	scanner := bufio.NewScanner(os.Stdin)
+	cache := pokecache.NewCache(5 * time.Minute)
 	for {
 		fmt.Print("Pokedex > ")
 		for scanner.Scan() {
 			cleantext := cleanInput(scanner.Text())
+			if len(cleantext) == 0 {
+				continue
+			}
 			cf, ok := commands[cleantext[0]]
 			if ok {
-				cf.callback()
+				cf.Callback(&baseConfig, cache)
 			} else {
 				fmt.Println("Unknown command")
 			}
@@ -47,20 +63,4 @@ func cleanInput(text string) []string {
 	text = strings.TrimSpace(text)
 	splitText := strings.Fields(text)
 	return splitText
-}
-
-func commandExit() error {
-	fmt.Println("Closing the Pokedex... Goodbye!")
-	os.Exit(0)
-	return nil
-}
-
-func commandHelp() error {
-	fmt.Println(
-		`Welcome to the Pokedex!
-Usage:
-
-help: Displays a help message
-exit: Exit the Pokedex`)
-	return nil
 }

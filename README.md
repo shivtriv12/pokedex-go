@@ -14,7 +14,7 @@ A command-line Pokédex application built in Go that allows you to explore the P
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/yourusername/pokedex-go.git
+   git clone https://github.com/shivtriv12/pokedex-go.git
    cd pokedex-go
    ```
 

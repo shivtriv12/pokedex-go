@@ -48,12 +48,17 @@ func commandExit(c *config, ch *pokecache.Cache, loc string, pokedex map[string]
 }
 
 func commandHelp(c *config, ch *pokecache.Cache, loc string, pokedex map[string]Pokemon) error {
-	fmt.Println(
-		`Welcome to the Pokedex!
+	fmt.Println(`Welcome to the Pokedex!
 Usage:
 
 help: Displays a help message
-exit: Exit the Pokedex`)
+exit: Exit the Pokedex
+map: Displays the name of next 20 location areas in pokemon world
+mapb: Displays the name of prev 20 location areas in pokemon world
+explore <area_name>: Displays all the pokemon in the area
+catch <pokemon_name>: Lets user catch a pokemon
+inspect <pokemon_name>: Displays all the stats of pokemon
+pokedex: Lists users caught pokemon names`)
 	return nil
 }
 
@@ -207,6 +212,7 @@ func commandCatch(c *config, ch *pokecache.Cache, pokemon string, pokedex map[st
 	catchChance := rand.Intn(poke.Base_Exp)
 	if catchChance > 40 {
 		fmt.Printf("%s was caught!\n", pokemon)
+		fmt.Println("You may now inspect it with the inspect command.")
 		pokedex[pokemon] = poke
 	} else {
 		fmt.Printf("%s escaped!\n", pokemon)
@@ -234,5 +240,13 @@ func commandInspect(c *config, ch *pokecache.Cache, pokemon string, pokedex map[
 		fmt.Printf("  - %s\n", pokemonType.Type.Name)
 	}
 
+	return nil
+}
+
+func commandPokedex(c *config, ch *pokecache.Cache, pokemon string, pokedex map[string]Pokemon) error {
+	fmt.Println("Your Pokedex:")
+	for _, poke := range pokedex {
+		fmt.Println(" -" + poke.Name)
+	}
 	return nil
 }

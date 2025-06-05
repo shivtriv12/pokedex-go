@@ -53,6 +53,12 @@ func startRepl() {
 		description: "Displays all the stat of pokemon",
 		Callback:    commandInspect,
 	}
+	commands["pokedex"] = cliCommand{
+		name:        "pokedex",
+		description: "Lists users caught pokemon names",
+		Callback:    commandPokedex,
+	}
+
 	scanner := bufio.NewScanner(os.Stdin)
 	cache := pokecache.NewCache(5 * time.Minute)
 	pokedex := make(map[string]Pokemon)

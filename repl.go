@@ -38,8 +38,24 @@ func startRepl() {
 		description: "Displays the name of prev 20 location areas in pokemon world",
 		Callback:    commandMapb,
 	}
+	commands["explore"] = cliCommand{
+		name:        "explore",
+		description: "Displays all the pokemon in the area",
+		Callback:    commandExplore,
+	}
+	commands["catch"] = cliCommand{
+		name:        "catch",
+		description: "lets user catch a pokemon",
+		Callback:    commandCatch,
+	}
+	commands["inspect"] = cliCommand{
+		name:        "inspect",
+		description: "Displays all the stat of pokemon",
+		Callback:    commandInspect,
+	}
 	scanner := bufio.NewScanner(os.Stdin)
 	cache := pokecache.NewCache(5 * time.Minute)
+	pokedex := make(map[string]Pokemon)
 	for {
 		fmt.Print("Pokedex > ")
 		for scanner.Scan() {
@@ -48,8 +64,10 @@ func startRepl() {
 				continue
 			}
 			cf, ok := commands[cleantext[0]]
-			if ok {
-				cf.Callback(&baseConfig, cache)
+			if ok && len(cleantext) == 2 {
+				cf.Callback(&baseConfig, cache, cleantext[1], pokedex)
+			} else if ok && len(cleantext) == 1 {
+				cf.Callback(&baseConfig, cache, "", pokedex)
 			} else {
 				fmt.Println("Unknown command")
 			}
